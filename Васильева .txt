@@ -1,0 +1,60 @@
+# Основной игровой цикл
+main() {
+    local current_player="X"
+
+    echo "Крестики-Нолики!"
+    echo "Игроки ходят по очереди. Введите номер строки и столбца от 1 до 3."
+
+    while true; do
+        print_board
+
+        # Получить ввод для строки
+        while true; do
+            read -p "Игрок $current_player, введите строку (1-3): " row
+            if [[ $row =~ ^[1-3]$ ]]; then
+                break
+            else
+                echo "Пожалуйста, введите целое число от 1 до 3."
+            fi
+        done
+
+        # Получить ввод для столбца
+        while true; do
+            read -p "Игрок $current_player, введите столбец (1-3): " col
+            if [[ $col =~ ^[1-3]$ ]]; then
+                break
+            else
+                echo "Пожалуйста, введите целое число от 1 до 3."
+            fi
+        done
+
+        # Проверить, пуста ли ячейка
+        if [[ ${board[$row,$col]} != " " ]]; then
+            echo "Эта ячейка уже занята. Выберите другую."
+            continue
+        fi
+
+        # Обновить доску
+        board[$row,$col]=$current_player
+
+        # Проверить победителя
+        if check_winner "$current_player"; then
+            print_board
+            echo "Игрок $current_player победил!"
+            break
+        fi
+
+        # Проверить на ничью
+        if is_board_full; then
+            print_board
+            echo "Ничья!"
+            break
+        fi
+
+        # Сменить игрока
+        current_player=$([ "$current_player" == "X" ] && echo "O" || echo "X")
+    done
+}
+
+# Начать игру
+main
